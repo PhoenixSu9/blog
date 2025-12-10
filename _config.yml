@@ -22,8 +22,8 @@ timezone: Asia/Shanghai
 #   trailing_html: true # Set to false to remove trailing '.html' from permalinks
 
 # 用户主页模式
-url: https://phoenixsu9.github.io
-root: /
+url: https://phoenixsu9.github.io/blog
+root: /blog/
 
 # Directory
 source_dir: source
