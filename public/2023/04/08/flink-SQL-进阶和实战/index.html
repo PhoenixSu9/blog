@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inconsolata:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"phoenixsu9.github.io","root":"/blog/","images":"/blog/images","scheme":"Gemini","darkmode":true,"version":"8.23.1","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/blog/js/config.js" defer></script>
+
+    <meta name="description" content="深入探讨Flink SQL的高级特性和实战应用，包括TopN查询、流Join、窗口函数、CEP复杂事件处理等核心概念和最佳实践">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flink SQL 进阶和实战指南">
+<meta property="og:url" content="https://phoenixsu9.github.io/blog/2023/04/08/flink-SQL-%E8%BF%9B%E9%98%B6%E5%92%8C%E5%AE%9E%E6%88%98/index.html">
+<meta property="og:site_name" content="Addroc&#39;s Blog">
+<meta property="og:description" content="深入探讨Flink SQL的高级特性和实战应用，包括TopN查询、流Join、窗口函数、CEP复杂事件处理等核心概念和最佳实践">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://phoenixsu9.github.io/blog/images/flink01.png">
+<meta property="og:image" content="https://phoenixsu9.github.io/blog/images/flink02.png">
+<meta property="og:image" content="https://phoenixsu9.github.io/blog/images/flink03.png">
+<meta property="og:image" content="https://phoenixsu9.github.io/blog/images/flink04.png">
+<meta property="og:image" content="https://phoenixsu9.github.io/blog/images/flink05.png">
+<meta property="og:image" content="https://phoenixsu9.github.io/blog/images/flink06.png">
+<meta property="og:image" content="https://phoenixsu9.github.io/blog/images/flink07.png">
+<meta property="og:image" content="https://phoenixsu9.github.io/blog/images/flink09.png">
+<meta property="article:published_time" content="2023-04-08T06:23:59.000Z">
+<meta property="article:modified_time" content="2025-12-19T06:51:32.293Z">
+<meta property="article:author" content="Addroc">
+<meta property="article:tag" content="Flink">
+<meta property="article:tag" content="SQL">
+<meta property="article:tag" content="流处理">
+<meta property="article:tag" content="实时计算">
+<meta property="article:tag" content="大数据">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://phoenixsu9.github.io/blog/images/flink01.png">
+
+
+<link rel="canonical" href="https://phoenixsu9.github.io/blog/2023/04/08/flink-SQL-%E8%BF%9B%E9%98%B6%E5%92%8C%E5%AE%9E%E6%88%98/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://phoenixsu9.github.io/blog/2023/04/08/flink-SQL-%E8%BF%9B%E9%98%B6%E5%92%8C%E5%AE%9E%E6%88%98/","path":"2023/04/08/flink-SQL-进阶和实战/","title":"Flink SQL 进阶和实战指南"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Flink SQL 进阶和实战指南 | Addroc's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/blog/js/third-party/analytics/google-analytics.js" defer></script>
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous" defer></script>
+<script src="/blog/js/utils.js" defer></script><script src="/blog/js/motion.js" defer></script><script src="/blog/js/sidebar.js" defer></script><script src="/blog/js/next-boot.js" defer></script><script src="/blog/js/pjax.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous" defer></script>
+<script src="/blog/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.5.0/mermaid.min.js","integrity":"sha256-2obLuIPcceEhkE3G09G33hBdmE55ivVcZUlcKcGNHjU="}}</script>
+  <script src="/blog/js/third-party/tags/mermaid.js" defer></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="/blog/js/third-party/tags/wavedrom.js" defer></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/blog/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/blog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Addroc's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Addroc blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">21</span></a></li><li class="menu-item menu-item-categories"><a href="/blog/categories/" rel="section"><i class="fa fa-folder-open fa-fw"></i>分类<span class="badge">20</span></a></li><li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">63</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">环境准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE"><span class="nav-number">2.1.</span> <span class="nav-text">基础配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E6%98%BE%E7%A4%BA%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.1.1.</span> <span class="nav-text">设置显示模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E8%A1%A8"><span class="nav-number">2.1.2.</span> <span class="nav-text">创建测试数据表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E8%AF%AD%E4%B9%89%E8%AF%A6%E8%A7%A3"><span class="nav-number">2.2.</span> <span class="nav-text">时间语义详解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83SQL%E6%93%8D%E4%BD%9C%E8%AF%A6%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">核心SQL操作详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TopN%E6%9F%A5%E8%AF%A2"><span class="nav-number">3.1.</span> <span class="nav-text">TopN查询</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80TopN%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.1.1.</span> <span class="nav-text">基础TopN实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%BB%E9%87%8D%E5%9C%BA%E6%99%AF%E7%9A%84TopN"><span class="nav-number">3.1.2.</span> <span class="nav-text">去重场景的TopN</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81Join%E8%AF%A6%E8%A7%A3"><span class="nav-number">3.2.</span> <span class="nav-text">流Join详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%85%B3%E8%81%94%E8%A1%A8"><span class="nav-number">3.2.1.</span> <span class="nav-text">创建关联表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Inner-Join"><span class="nav-number">3.2.2.</span> <span class="nav-text">Inner Join</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Left-Join"><span class="nav-number">3.2.3.</span> <span class="nav-text">Left Join</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Right-Join"><span class="nav-number">3.2.4.</span> <span class="nav-text">Right Join</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Full-Outer-Join"><span class="nav-number">3.2.5.</span> <span class="nav-text">Full Outer Join</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81Join%E7%9A%84%E5%85%B3%E9%94%AE%E7%89%B9%E6%80%A7"><span class="nav-number">3.2.6.</span> <span class="nav-text">流Join的关键特性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%B4%E9%9A%94%E8%BF%9E%E6%8E%A5-Interval-Join"><span class="nav-number">3.3.</span> <span class="nav-text">间隔连接(Interval Join)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%8C%BA%E9%97%B4%E6%A0%BC%E5%BC%8F"><span class="nav-number">3.3.1.</span> <span class="nav-text">时间区间格式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.3.2.</span> <span class="nav-text">实际应用示例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%B4%E8%A1%A8%E8%81%94%E7%BB%93%E6%9F%A5%E8%AF%A2-Lookup-Join"><span class="nav-number">3.4.</span> <span class="nav-text">维表联结查询(Lookup Join)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95"><span class="nav-number">3.4.1.</span> <span class="nav-text">基础语法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7%E5%92%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">4.</span> <span class="nav-text">高级特性和应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0%E8%BF%9B%E9%98%B6"><span class="nav-number">4.1.</span> <span class="nav-text">窗口函数进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BB%9A%E5%8A%A8%E7%AA%97%E5%8F%A3%E8%81%9A%E5%90%88"><span class="nav-number">4.1.1.</span> <span class="nav-text">滚动窗口聚合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E8%81%9A%E5%90%88"><span class="nav-number">4.1.2.</span> <span class="nav-text">滑动窗口聚合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%9A%E8%AF%9D%E7%AA%97%E5%8F%A3"><span class="nav-number">4.1.3.</span> <span class="nav-text">会话窗口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E6%9D%82%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86-CEP"><span class="nav-number">4.2.</span> <span class="nav-text">复杂事件处理(CEP)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.2.1.</span> <span class="nav-text">模式匹配示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AC%BA%E8%AF%88%E6%A3%80%E6%B5%8B%E5%9C%BA%E6%99%AF"><span class="nav-number">4.2.2.</span> <span class="nav-text">欺诈检测场景</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0-UDF"><span class="nav-number">4.3.</span> <span class="nav-text">用户定义函数(UDF)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%87%E9%87%8F%E5%87%BD%E6%95%B0%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.3.1.</span> <span class="nav-text">标量函数示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%A8%E5%87%BD%E6%95%B0%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.3.2.</span> <span class="nav-text">表函数示例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%92%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="nav-number">4.4.</span> <span class="nav-text">状态管理和性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%8A%B6%E6%80%81TTL%E9%85%8D%E7%BD%AE"><span class="nav-number">4.4.1.</span> <span class="nav-text">状态TTL配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MiniBatch%E4%BC%98%E5%8C%96"><span class="nav-number">4.4.2.</span> <span class="nav-text">MiniBatch优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0-%E5%85%A8%E5%B1%80%E8%81%9A%E5%90%88"><span class="nav-number">4.4.3.</span> <span class="nav-text">本地&#x2F;全局聚合</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">5.</span> <span class="nav-text">实际应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E6%97%B6%E6%95%B0%E4%BB%93%E5%9C%BA%E6%99%AF"><span class="nav-number">5.1.</span> <span class="nav-text">实时数仓场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E6%97%B6%E6%8C%87%E6%A0%87%E8%AE%A1%E7%AE%97"><span class="nav-number">5.1.1.</span> <span class="nav-text">实时指标计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E6%97%B6%E6%8A%A5%E8%A1%A8%E7%94%9F%E6%88%90"><span class="nav-number">5.1.2.</span> <span class="nav-text">实时报表生成</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E6%97%B6%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6"><span class="nav-number">5.2.</span> <span class="nav-text">实时监控告警</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B"><span class="nav-number">5.2.1.</span> <span class="nav-text">异常检测</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E6%97%B6%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F"><span class="nav-number">5.3.</span> <span class="nav-text">实时推荐系统</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90"><span class="nav-number">5.3.1.</span> <span class="nav-text">用户行为分析</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E9%AB%98%E7%BA%A7%E5%8A%9F%E8%83%BD"><span class="nav-number">6.</span> <span class="nav-text">其他高级功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL%E6%8F%90%E7%A4%BA-Hints"><span class="nav-number">6.1.</span> <span class="nav-text">SQL提示(Hints)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E5%90%88%E6%93%8D%E4%BD%9C"><span class="nav-number">6.2.</span> <span class="nav-text">集合操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="nav-number">6.3.</span> <span class="nav-text">子查询优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E5%92%8C%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98"><span class="nav-number">7.</span> <span class="nav-text">最佳实践和性能调优</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="nav-number">7.1.</span> <span class="nav-text">1. 状态管理最佳实践</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96"><span class="nav-number">7.2.</span> <span class="nav-text">2. 内存优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%B9%B6%E8%A1%8C%E5%BA%A6%E8%B0%83%E4%BC%98"><span class="nav-number">7.3.</span> <span class="nav-text">3. 并行度调优</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Checkpoint%E9%85%8D%E7%BD%AE"><span class="nav-number">7.4.</span> <span class="nav-text">4. Checkpoint配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%B0%B4%E5%8D%B0%E7%AD%96%E7%95%A5"><span class="nav-number">7.5.</span> <span class="nav-text">5. 水印策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E5%92%8C%E8%B0%83%E8%AF%95"><span class="nav-number">8.</span> <span class="nav-text">错误处理和调试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">8.1.</span> <span class="nav-text">常见错误及解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%97%B6%E9%97%B4%E6%A0%BC%E5%BC%8F%E4%B8%8D%E5%8C%B9%E9%85%8D"><span class="nav-number">8.1.1.</span> <span class="nav-text">1. 时间格式不匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E7%8A%B6%E6%80%81%E8%BF%87%E5%A4%A7%E9%97%AE%E9%A2%98"><span class="nav-number">8.1.2.</span> <span class="nav-text">2. 状态过大问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E8%83%8C%E5%8E%8B%E9%97%AE%E9%A2%98"><span class="nav-number">8.1.3.</span> <span class="nav-text">3. 背压问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E6%8E%A7%E5%92%8C%E6%8C%87%E6%A0%87"><span class="nav-number">8.2.</span> <span class="nav-text">监控和指标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E6%8C%87%E6%A0%87%E7%9B%91%E6%8E%A7"><span class="nav-number">8.2.1.</span> <span class="nav-text">关键指标监控</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%88%E6%9C%AC%E5%85%BC%E5%AE%B9%E6%80%A7%E5%92%8C%E5%8D%87%E7%BA%A7%E6%8C%87%E5%8D%97"><span class="nav-number">9.</span> <span class="nav-text">版本兼容性和升级指南</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Flink-1-16-%E6%96%B0%E7%89%B9%E6%80%A7"><span class="nav-number">9.1.</span> <span class="nav-text">Flink 1.16+ 新特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%87%E7%BA%A7%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">9.2.</span> <span class="nav-text">升级注意事项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">10.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Addroc"
+      src="/blog/images/touxiang.jpg">
+  <p class="site-author-name" itemprop="name">Addroc</p>
+  <div class="site-description" itemprop="description">Addroc's blog</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/blog/archives/">
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/blog/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/blog/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRlZS5jb20vYWRkcm9j" title="GitHub → https:&#x2F;&#x2F;gitee.com&#x2F;addroc"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmFkZHJvY19zdWVAMTYzLmNvbQ==" title="E-Mail → mailto:addroc_sue@163.com"><i class="fa fa-envelope fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FkZHJvY19zdWU=" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;addroc_sue"><i class="fa fa-rss fa-fw"></i></span>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/big/by_nc_sa.svg" alt="Creative Commons"></span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://phoenixsu9.github.io/blog/2023/04/08/flink-SQL-%E8%BF%9B%E9%98%B6%E5%92%8C%E5%AE%9E%E6%88%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/touxiang.jpg">
+      <meta itemprop="name" content="Addroc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Addroc's Blog">
+      <meta itemprop="description" content="Addroc's blog">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Flink SQL 进阶和实战指南 | Addroc's Blog">
+      <meta itemprop="description" content="深入探讨Flink SQL的高级特性和实战应用，包括TopN查询、流Join、窗口函数、CEP复杂事件处理等核心概念和最佳实践">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Flink SQL 进阶和实战指南<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvdGhlbWUtbmV4dC1kb2NzL2VkaXQvbWFzdGVyL3NvdXJjZS9fcG9zdHMvZmxpbmstU1FMLei/m+mYtuWSjOWunuaImC5tZA==" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-04-08 14:23:59" itemprop="dateCreated datePublished" datetime="2023-04-08T14:23:59+08:00">2023-04-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">大数据技术</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/%E6%B5%81%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">流处理</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/blog/2023/04/08/flink-SQL-%E8%BF%9B%E9%98%B6%E5%92%8C%E5%AE%9E%E6%88%98/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2023/04/08/flink-SQL-进阶和实战/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+            <div class="post-description">深入探讨Flink SQL的高级特性和实战应用，包括TopN查询、流Join、窗口函数、CEP复杂事件处理等核心概念和最佳实践</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Apache Flink作为统一的流批处理引擎，其SQL API为开发者提供了强大的声明式编程能力。本文将深入探讨Flink SQL的高级特性和实战应用，涵盖从基础概念到复杂场景的全面指南。</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><h3 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h3><p>本文基于Flink 1.16+版本，通过<code>bin/sql-client.sh</code>执行SQL语句。</p>
+<h4 id="设置显示模式"><a href="#设置显示模式" class="headerlink" title="设置显示模式"></a>设置显示模式</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET sql-client.execution.result-mode=tableau;</span><br></pre></td></tr></table></figure>
+
+<h4 id="创建测试数据表"><a href="#创建测试数据表" class="headerlink" title="创建测试数据表"></a>创建测试数据表</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建包含处理时间、事件时间和watermark的测试表</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> ws (</span><br><span class="line">  id <span class="type">INT</span>,</span><br><span class="line">  vc <span class="type">INT</span>,</span><br><span class="line">  pt <span class="keyword">AS</span> PROCTIME(), <span class="comment">-- 处理时间</span></span><br><span class="line">  et <span class="keyword">AS</span> <span class="built_in">cast</span>(<span class="built_in">CURRENT_TIMESTAMP</span> <span class="keyword">as</span> <span class="type">timestamp</span>(<span class="number">3</span>)), <span class="comment">-- 事件时间</span></span><br><span class="line">  WATERMARK <span class="keyword">FOR</span> et <span class="keyword">AS</span> et <span class="operator">-</span> <span class="type">INTERVAL</span> <span class="string">&#x27;5&#x27;</span> <span class="keyword">SECOND</span>   <span class="comment">-- watermark设置</span></span><br><span class="line">) <span class="keyword">WITH</span> (</span><br><span class="line">  <span class="string">&#x27;connector&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;datagen&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;rows-per-second&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;fields.id.min&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;fields.id.max&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;3&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;fields.vc.min&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;fields.vc.max&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;100&#x27;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p><strong>查看表结构</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Flink <span class="keyword">SQL</span><span class="operator">&gt;</span> <span class="keyword">desc</span> ws;</span><br><span class="line"><span class="operator">+</span><span class="comment">------+-----------------------------+-------+-----+----------------------+----------------------------+</span></span><br><span class="line"><span class="operator">|</span> name <span class="operator">|</span>                        type <span class="operator">|</span>  <span class="keyword">null</span> <span class="operator">|</span> key <span class="operator">|</span>               extras <span class="operator">|</span>                  watermark <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+-----------------------------+-------+-----+----------------------+----------------------------+</span></span><br><span class="line"><span class="operator">|</span>   id <span class="operator">|</span>                         <span class="type">INT</span> <span class="operator">|</span>  <span class="literal">TRUE</span> <span class="operator">|</span>     <span class="operator">|</span>                      <span class="operator">|</span>                            <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   vc <span class="operator">|</span>                         <span class="type">INT</span> <span class="operator">|</span>  <span class="literal">TRUE</span> <span class="operator">|</span>     <span class="operator">|</span>                      <span class="operator">|</span>                            <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   pt <span class="operator">|</span> TIMESTAMP_LTZ(<span class="number">3</span>) <span class="operator">*</span>PROCTIME<span class="operator">*</span> <span class="operator">|</span> <span class="literal">FALSE</span> <span class="operator">|</span>     <span class="operator">|</span>        <span class="keyword">AS</span> PROCTIME() <span class="operator">|</span>                            <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>   et <span class="operator">|</span>  TIMESTAMP_LTZ(<span class="number">3</span>) <span class="operator">*</span>ROWTIME<span class="operator">*</span> <span class="operator">|</span> <span class="literal">FALSE</span> <span class="operator">|</span>     <span class="operator">|</span> <span class="keyword">AS</span> <span class="built_in">CURRENT_TIMESTAMP</span> <span class="operator">|</span> `et` <span class="operator">-</span> <span class="type">INTERVAL</span> <span class="string">&#x27;5&#x27;</span> <span class="keyword">SECOND</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+-----------------------------+-------+-----+----------------------+----------------------------+</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="时间语义详解"><a href="#时间语义详解" class="headerlink" title="时间语义详解"></a>时间语义详解</h3><p><strong>时间格式说明</strong></p>
+<ul>
+<li>默认时间格式：<code>TIMESTAMP_LTZ(3)</code></li>
+<li>带LTZ：存储时区信息的时间戳</li>
+<li>不带LTZ：不存储时区信息的本地时间戳</li>
+</ul>
+<p><img src="/blog/images/flink01.png" alt="flink中的时间格式"></p>
+<p><strong>时间属性的重要性</strong></p>
+<ul>
+<li>**处理时间(Processing Time)**：数据被处理的系统时间，具有最佳的性能和最低的延迟</li>
+<li>**事件时间(Event Time)**：数据产生的业务时间，能够处理乱序和延迟数据</li>
+<li>**摄入时间(Ingestion Time)**：数据进入Flink的时间，介于处理时间和事件时间之间</li>
+</ul>
+<h2 id="核心SQL操作详解"><a href="#核心SQL操作详解" class="headerlink" title="核心SQL操作详解"></a>核心SQL操作详解</h2><h3 id="TopN查询"><a href="#TopN查询" class="headerlink" title="TopN查询"></a>TopN查询</h3><p>TopN查询是流处理中的经典场景，用于获取排名前N的记录。</p>
+<h4 id="基础TopN实现"><a href="#基础TopN实现" class="headerlink" title="基础TopN实现"></a>基础TopN实现</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 获取每个id分区中vc值最大的前3条记录</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    id,</span><br><span class="line">    et,</span><br><span class="line">    vc,</span><br><span class="line">    rownum</span><br><span class="line"><span class="keyword">FROM</span> </span><br><span class="line">(</span><br><span class="line">    <span class="keyword">SELECT</span> </span><br><span class="line">        id,</span><br><span class="line">        et,</span><br><span class="line">        vc,</span><br><span class="line">        <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(</span><br><span class="line">            <span class="keyword">PARTITION</span> <span class="keyword">BY</span> id </span><br><span class="line">            <span class="keyword">ORDER</span> <span class="keyword">BY</span> vc <span class="keyword">DESC</span> <span class="comment">-- 可以是升序或降序</span></span><br><span class="line">        ) <span class="keyword">AS</span> rownum</span><br><span class="line">    <span class="keyword">FROM</span> ws</span><br><span class="line">)</span><br><span class="line"><span class="keyword">WHERE</span> rownum <span class="operator">&lt;=</span> <span class="number">3</span>;  <span class="comment">-- TopN的关键，3表示N</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>查询结果解释</strong></p>
+<ul>
+<li><code>op</code>: <code>+</code>表示新增，<code>-</code>表示删除</li>
+<li><code>I</code>: 插入操作</li>
+<li><code>U</code>: 更新操作</li>
+<li><code>rownum</code>: 排名字段</li>
+</ul>
+<p><img src="/blog/images/flink02.png" alt="top3查询返回"></p>
+<h4 id="去重场景的TopN"><a href="#去重场景的TopN" class="headerlink" title="去重场景的TopN"></a>去重场景的TopN</h4><p>当只需要Top1时，相当于对每个分区进行去重，保留排序后的最值记录。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 获取每个id分区中最新的数据（去重）</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    id,</span><br><span class="line">    et,</span><br><span class="line">    vc,</span><br><span class="line">    rownum</span><br><span class="line"><span class="keyword">FROM</span> </span><br><span class="line">(</span><br><span class="line">    <span class="keyword">SELECT</span> </span><br><span class="line">        id,</span><br><span class="line">        et,</span><br><span class="line">        vc,</span><br><span class="line">        <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(</span><br><span class="line">            <span class="keyword">PARTITION</span> <span class="keyword">BY</span> id</span><br><span class="line">            <span class="keyword">ORDER</span> <span class="keyword">BY</span> et <span class="keyword">DESC</span>  <span class="comment">-- 按事件时间降序，获取最新数据</span></span><br><span class="line">        ) <span class="keyword">AS</span> rownum</span><br><span class="line">    <span class="keyword">FROM</span> ws</span><br><span class="line">)</span><br><span class="line"><span class="keyword">WHERE</span> rownum <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>TopN去重的特殊要求</strong></p>
+<ul>
+<li>排序字段必须是时间属性列</li>
+<li>支持升序（获取最早数据）和降序（获取最新数据）</li>
+<li>常用于数据去重和状态管理</li>
+</ul>
+<p><img src="/blog/images/flink03.png" alt="去重获取最新数据demo返回结果"></p>
+<p><strong>TopN性能优化策略</strong></p>
+<ol>
+<li><strong>AppendRank</strong>: 仅支持插入数据，状态存储N条记录</li>
+<li><strong>UpdateFastRank</strong>: 支持更新数据，要求单调性</li>
+<li><strong>RetractRank</strong>: 支持所有场景，但状态最大</li>
+</ol>
+<h3 id="流Join详解"><a href="#流Join详解" class="headerlink" title="流Join详解"></a>流Join详解</h3><p>流Join是Flink SQL中最复杂也是最强大的功能之一，支持多种Join类型。</p>
+<h4 id="创建关联表"><a href="#创建关联表" class="headerlink" title="创建关联表"></a>创建关联表</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建用于Join的第二个表</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> ws1 (</span><br><span class="line">  id <span class="type">INT</span>,</span><br><span class="line">  vc <span class="type">INT</span>,</span><br><span class="line">  pt <span class="keyword">AS</span> PROCTIME(),</span><br><span class="line">  et <span class="keyword">AS</span> <span class="built_in">cast</span>(<span class="built_in">CURRENT_TIMESTAMP</span> <span class="keyword">as</span> <span class="type">timestamp</span>(<span class="number">3</span>)),</span><br><span class="line">  WATERMARK <span class="keyword">FOR</span> et <span class="keyword">AS</span> et <span class="operator">-</span> <span class="type">INTERVAL</span> <span class="string">&#x27;0.001&#x27;</span> <span class="keyword">SECOND</span></span><br><span class="line">) <span class="keyword">WITH</span> (</span><br><span class="line">  <span class="string">&#x27;connector&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;datagen&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;rows-per-second&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;fields.id.min&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;3&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;fields.id.max&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;5&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;fields.vc.min&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;fields.vc.max&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;100&#x27;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h4 id="Inner-Join"><a href="#Inner-Join" class="headerlink" title="Inner Join"></a>Inner Join</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 内连接：只有两个流都匹配时才输出</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> ws</span><br><span class="line"><span class="keyword">INNER</span> <span class="keyword">JOIN</span> ws1</span><br><span class="line"><span class="keyword">ON</span> ws.id <span class="operator">=</span> ws1.id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>特点</strong>：只输出匹配的记录，格式为<code>+[L, R]</code></p>
+<p><img src="/blog/images/flink04.png" alt="InnerJoin返回"></p>
+<h4 id="Left-Join"><a href="#Left-Join" class="headerlink" title="Left Join"></a>Left Join</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 左连接：保留左流所有记录</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> ws</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> ws1</span><br><span class="line"><span class="keyword">ON</span> ws.id <span class="operator">=</span> ws1.id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Left Join的三种输出情况</strong>：</p>
+<ol>
+<li>左右流同时到达：<code>+[L, R]</code></li>
+<li>左流先到：<code>+[L, null]</code> → <code>-[L, null]</code> → <code>+[L, R]</code></li>
+<li>右流先到：等待左流</li>
+</ol>
+<p><img src="/blog/images/flink05.png" alt="Left Join"></p>
+<h4 id="Right-Join"><a href="#Right-Join" class="headerlink" title="Right Join"></a>Right Join</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 右连接：保留右流所有记录</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> ws</span><br><span class="line"><span class="keyword">RIGHT</span> <span class="keyword">JOIN</span> ws1</span><br><span class="line"><span class="keyword">ON</span> ws.id <span class="operator">=</span> ws1.id;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/blog/images/flink06.png" alt="right_join"></p>
+<h4 id="Full-Outer-Join"><a href="#Full-Outer-Join" class="headerlink" title="Full Outer Join"></a>Full Outer Join</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 全外连接：保留两个流的所有记录</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> ws</span><br><span class="line"><span class="keyword">FULL</span> <span class="keyword">OUTER</span> <span class="keyword">JOIN</span> ws1</span><br><span class="line"><span class="keyword">ON</span> ws.id <span class="operator">=</span> ws1.id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>特点</strong>：结合Left Join和Right Join的特性，先到的流先输出，后到的流匹配后进行撤回修改。</p>
+<p><img src="/blog/images/flink07.png" alt="full_outer_join"></p>
+<h4 id="流Join的关键特性"><a href="#流Join的关键特性" class="headerlink" title="流Join的关键特性"></a>流Join的关键特性</h4><p><strong>状态管理</strong>：</p>
+<ul>
+<li>流Join需要在State中存储两个流的所有数据</li>
+<li>状态会无限增长，需要配置合适的TTL</li>
+<li>建议设置状态清理策略防止内存溢出</li>
+</ul>
+<p><strong>性能考量</strong>：</p>
+<ul>
+<li>等值关联：使用Hash策略，性能较好</li>
+<li>非等值关联：使用Global策略，所有数据发往一个并发，性能较差</li>
+</ul>
+<h3 id="间隔连接-Interval-Join"><a href="#间隔连接-Interval-Join" class="headerlink" title="间隔连接(Interval Join)"></a>间隔连接(Interval Join)</h3><p>间隔连接是在内连接基础上增加时间窗口限制的特殊Join类型。</p>
+<h4 id="时间区间格式"><a href="#时间区间格式" class="headerlink" title="时间区间格式"></a>时间区间格式</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 三种时间区间表达方式</span></span><br><span class="line"><span class="comment">-- 1. 相等条件</span></span><br><span class="line">ltime <span class="operator">=</span> rtime</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 2. 范围条件</span></span><br><span class="line">ltime <span class="operator">&gt;=</span> rtime <span class="keyword">AND</span> ltime <span class="operator">&lt;</span> rtime <span class="operator">+</span> <span class="type">INTERVAL</span> <span class="string">&#x27;10&#x27;</span> <span class="keyword">MINUTE</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 3. BETWEEN语法</span></span><br><span class="line">ltime <span class="keyword">BETWEEN</span> rtime <span class="operator">-</span> <span class="type">INTERVAL</span> <span class="string">&#x27;10&#x27;</span> <span class="keyword">SECOND</span> <span class="keyword">AND</span> rtime <span class="operator">+</span> <span class="type">INTERVAL</span> <span class="string">&#x27;5&#x27;</span> <span class="keyword">SECOND</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="实际应用示例"><a href="#实际应用示例" class="headerlink" title="实际应用示例"></a>实际应用示例</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 在2秒时间窗口内的数据才能进行join</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> ws, ws1</span><br><span class="line"><span class="keyword">WHERE</span> ws.id <span class="operator">=</span> ws1.id</span><br><span class="line"><span class="keyword">AND</span> ws.et <span class="keyword">BETWEEN</span> ws1.et <span class="operator">-</span> <span class="type">INTERVAL</span> <span class="string">&#x27;2&#x27;</span> <span class="keyword">SECOND</span> <span class="keyword">AND</span> ws1.et <span class="operator">+</span> <span class="type">INTERVAL</span> <span class="string">&#x27;2&#x27;</span> <span class="keyword">SECOND</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意事项</strong>：</p>
+<ul>
+<li>时间字段必须是同一种类型（都是事件时间或都是处理时间）</li>
+<li>时间格式不统一会导致报错</li>
+</ul>
+<p><img src="/blog/images/flink09.png" alt="interval Join"></p>
+<h3 id="维表联结查询-Lookup-Join"><a href="#维表联结查询-Lookup-Join" class="headerlink" title="维表联结查询(Lookup Join)"></a>维表联结查询(Lookup Join)</h3><p>Lookup Join用于实时获取外部缓存数据，支持Redis、MySQL、HBase等外部存储。</p>
+<h4 id="基础语法"><a href="#基础语法" class="headerlink" title="基础语法"></a>基础语法</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建维表</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> Customers (</span><br><span class="line">  id <span class="type">INT</span>,</span><br><span class="line">  name STRING,</span><br><span class="line">  country STRING,</span><br><span class="line">  zip STRING</span><br><span class="line">) <span class="keyword">WITH</span> (</span><br><span class="line">  <span class="string">&#x27;connector&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;jdbc&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;url&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;jdbc:mysql://hadoop102:3306/customerdb&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;table-name&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;customers&#x27;</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- Lookup Join查询</span></span><br><span class="line"><span class="keyword">SELECT</span> o.order_id, o.total, c.country, c.zip</span><br><span class="line"><span class="keyword">FROM</span> Orders <span class="keyword">AS</span> o</span><br><span class="line"><span class="keyword">JOIN</span> Customers <span class="keyword">FOR</span> <span class="built_in">SYSTEM_TIME</span> <span class="keyword">AS</span> <span class="keyword">OF</span> o.proc_time <span class="keyword">AS</span> c  <span class="comment">-- 关键语法</span></span><br><span class="line"><span class="keyword">ON</span> o.customer_id <span class="operator">=</span> c.id;</span><br></pre></td></tr></table></figure>
+
+<p><strong>性能优化</strong>：</p>
+<ol>
+<li><strong>异步模式</strong>：使用<code>async</code>提高吞吐量</li>
+<li><strong>缓存策略</strong>：配置<code>FULL</code>、<code>PARTIAL</code>或<code>NONE</code>缓存</li>
+<li><strong>并发控制</strong>：调整<code>capacity</code>和<code>timeout</code>参数</li>
+</ol>
+<h2 id="高级特性和应用场景"><a href="#高级特性和应用场景" class="headerlink" title="高级特性和应用场景"></a>高级特性和应用场景</h2><h3 id="窗口函数进阶"><a href="#窗口函数进阶" class="headerlink" title="窗口函数进阶"></a>窗口函数进阶</h3><h4 id="滚动窗口聚合"><a href="#滚动窗口聚合" class="headerlink" title="滚动窗口聚合"></a>滚动窗口聚合</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 每5分钟统计一次各id的数据量</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    id,</span><br><span class="line">    window_start,</span><br><span class="line">    window_end,</span><br><span class="line">    <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">as</span> cnt,</span><br><span class="line">    <span class="built_in">SUM</span>(vc) <span class="keyword">as</span> total_vc</span><br><span class="line"><span class="keyword">FROM</span> <span class="keyword">TABLE</span>(</span><br><span class="line">    TUMBLE(<span class="keyword">TABLE</span> ws, DESCRIPTOR(et), <span class="type">INTERVAL</span> <span class="string">&#x27;5&#x27;</span> MINUTES)</span><br><span class="line">)</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> id, window_start, window_end;</span><br></pre></td></tr></table></figure>
+
+<h4 id="滑动窗口聚合"><a href="#滑动窗口聚合" class="headerlink" title="滑动窗口聚合"></a>滑动窗口聚合</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 每1分钟计算过去5分钟的统计数据</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    id,</span><br><span class="line">    window_start,</span><br><span class="line">    window_end,</span><br><span class="line">    <span class="built_in">AVG</span>(vc) <span class="keyword">as</span> avg_vc</span><br><span class="line"><span class="keyword">FROM</span> <span class="keyword">TABLE</span>(</span><br><span class="line">    HOP(<span class="keyword">TABLE</span> ws, DESCRIPTOR(et), <span class="type">INTERVAL</span> <span class="string">&#x27;1&#x27;</span> MINUTES, <span class="type">INTERVAL</span> <span class="string">&#x27;5&#x27;</span> MINUTES)</span><br><span class="line">)</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> id, window_start, window_end;</span><br></pre></td></tr></table></figure>
+
+<h4 id="会话窗口"><a href="#会话窗口" class="headerlink" title="会话窗口"></a>会话窗口</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 基于30秒不活跃间隔的会话窗口</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    id,</span><br><span class="line">    window_start,</span><br><span class="line">    window_end,</span><br><span class="line">    <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">as</span> session_count</span><br><span class="line"><span class="keyword">FROM</span> <span class="keyword">TABLE</span>(</span><br><span class="line">    SESSION(<span class="keyword">TABLE</span> ws, DESCRIPTOR(et), <span class="type">INTERVAL</span> <span class="string">&#x27;30&#x27;</span> SECONDS)</span><br><span class="line">)</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> id, window_start, window_end;</span><br></pre></td></tr></table></figure>
+
+<h3 id="复杂事件处理-CEP"><a href="#复杂事件处理-CEP" class="headerlink" title="复杂事件处理(CEP)"></a>复杂事件处理(CEP)</h3><h4 id="模式匹配示例"><a href="#模式匹配示例" class="headerlink" title="模式匹配示例"></a>模式匹配示例</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 检测连续3次数值上升的模式</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> ws</span><br><span class="line"><span class="keyword">MATCH_RECOGNIZE</span> (</span><br><span class="line">    <span class="keyword">PARTITION</span> <span class="keyword">BY</span> id</span><br><span class="line">    <span class="keyword">ORDER</span> <span class="keyword">BY</span> et</span><br><span class="line">    MEASURES</span><br><span class="line">        A.vc <span class="keyword">AS</span> start_vc,</span><br><span class="line">        C.vc <span class="keyword">AS</span> end_vc,</span><br><span class="line">        C.et <span class="keyword">AS</span> match_time</span><br><span class="line">    <span class="keyword">PATTERN</span> (A B C)</span><br><span class="line">    <span class="keyword">DEFINE</span></span><br><span class="line">        A <span class="keyword">AS</span> <span class="literal">TRUE</span>,</span><br><span class="line">        B <span class="keyword">AS</span> B.vc <span class="operator">&gt;</span> A.vc,</span><br><span class="line">        C <span class="keyword">AS</span> C.vc <span class="operator">&gt;</span> B.vc</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h4 id="欺诈检测场景"><a href="#欺诈检测场景" class="headerlink" title="欺诈检测场景"></a>欺诈检测场景</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 检测5分钟内同一用户的异常交易模式</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> transactions (</span><br><span class="line">    user_id <span class="type">BIGINT</span>,</span><br><span class="line">    amount <span class="type">DECIMAL</span>(<span class="number">10</span>,<span class="number">2</span>),</span><br><span class="line">    location STRING,</span><br><span class="line">    et <span class="keyword">AS</span> <span class="built_in">CURRENT_TIMESTAMP</span>,</span><br><span class="line">    WATERMARK <span class="keyword">FOR</span> et <span class="keyword">AS</span> et <span class="operator">-</span> <span class="type">INTERVAL</span> <span class="string">&#x27;5&#x27;</span> <span class="keyword">SECOND</span></span><br><span class="line">) <span class="keyword">WITH</span> (...);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 检测短时间内异地大额交易</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> transactions</span><br><span class="line"><span class="keyword">MATCH_RECOGNIZE</span> (</span><br><span class="line">    <span class="keyword">PARTITION</span> <span class="keyword">BY</span> user_id</span><br><span class="line">    <span class="keyword">ORDER</span> <span class="keyword">BY</span> et</span><br><span class="line">    MEASURES</span><br><span class="line">        A.amount <span class="keyword">AS</span> first_amount,</span><br><span class="line">        B.amount <span class="keyword">AS</span> second_amount,</span><br><span class="line">        A.location <span class="keyword">AS</span> first_location,</span><br><span class="line">        B.location <span class="keyword">AS</span> second_location</span><br><span class="line">    <span class="keyword">WITHIN</span> <span class="type">INTERVAL</span> <span class="string">&#x27;5&#x27;</span> MINUTES</span><br><span class="line">    <span class="keyword">PATTERN</span> (A B)</span><br><span class="line">    <span class="keyword">DEFINE</span></span><br><span class="line">        A <span class="keyword">AS</span> A.amount <span class="operator">&gt;</span> <span class="number">1000</span>,</span><br><span class="line">        B <span class="keyword">AS</span> B.amount <span class="operator">&gt;</span> <span class="number">1000</span> <span class="keyword">AND</span> B.location <span class="operator">&lt;&gt;</span> A.location</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h3 id="用户定义函数-UDF"><a href="#用户定义函数-UDF" class="headerlink" title="用户定义函数(UDF)"></a>用户定义函数(UDF)</h3><h4 id="标量函数示例"><a href="#标量函数示例" class="headerlink" title="标量函数示例"></a>标量函数示例</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建自定义函数</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> my_upper <span class="keyword">AS</span> <span class="string">&#x27;com.example.MyUpperFunction&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 使用自定义函数</span></span><br><span class="line"><span class="keyword">SELECT</span> id, my_upper(name) <span class="keyword">as</span> upper_name <span class="keyword">FROM</span> my_table;</span><br></pre></td></tr></table></figure>
+
+<h4 id="表函数示例"><a href="#表函数示例" class="headerlink" title="表函数示例"></a>表函数示例</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建表函数用于字符串分割</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> split_string <span class="keyword">AS</span> <span class="string">&#x27;com.example.SplitStringFunction&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 使用表函数</span></span><br><span class="line"><span class="keyword">SELECT</span> id, word</span><br><span class="line"><span class="keyword">FROM</span> my_table, <span class="keyword">LATERAL</span> <span class="keyword">TABLE</span>(split_string(content, <span class="string">&#x27;,&#x27;</span>)) <span class="keyword">AS</span> T(word);</span><br></pre></td></tr></table></figure>
+
+<h3 id="状态管理和性能优化"><a href="#状态管理和性能优化" class="headerlink" title="状态管理和性能优化"></a>状态管理和性能优化</h3><h4 id="状态TTL配置"><a href="#状态TTL配置" class="headerlink" title="状态TTL配置"></a>状态TTL配置</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 配置状态生存时间</span></span><br><span class="line"><span class="keyword">SET</span> table.exec.state.ttl <span class="operator">=</span> <span class="number">1</span>h;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 配置状态清理策略</span></span><br><span class="line"><span class="keyword">SET</span> table.exec.state.ttl.strategy <span class="operator">=</span> <span class="string">&#x27;OnCreateAndWrite&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="MiniBatch优化"><a href="#MiniBatch优化" class="headerlink" title="MiniBatch优化"></a>MiniBatch优化</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 启用MiniBatch优化</span></span><br><span class="line"><span class="keyword">SET</span> table.exec.mini<span class="operator">-</span>batch.enabled <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">SET</span> table.exec.mini<span class="operator">-</span>batch.allow<span class="operator">-</span>latency <span class="operator">=</span> <span class="number">5</span>s;</span><br><span class="line"><span class="keyword">SET</span> table.exec.mini<span class="operator">-</span>batch.size <span class="operator">=</span> <span class="number">1000</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="本地-全局聚合"><a href="#本地-全局聚合" class="headerlink" title="本地&#x2F;全局聚合"></a>本地&#x2F;全局聚合</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 启用两阶段聚合优化</span></span><br><span class="line"><span class="keyword">SET</span> table.optimizer.agg<span class="operator">-</span>phase<span class="operator">-</span>strategy <span class="operator">=</span> TWO_PHASE;</span><br></pre></td></tr></table></figure>
+
+<h2 id="实际应用场景"><a href="#实际应用场景" class="headerlink" title="实际应用场景"></a>实际应用场景</h2><h3 id="实时数仓场景"><a href="#实时数仓场景" class="headerlink" title="实时数仓场景"></a>实时数仓场景</h3><h4 id="实时指标计算"><a href="#实时指标计算" class="headerlink" title="实时指标计算"></a>实时指标计算</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 实时计算用户活跃度指标</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">VIEW</span> user_activity <span class="keyword">AS</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    user_id,</span><br><span class="line">    DATE_FORMAT(et, <span class="string">&#x27;yyyy-MM-dd&#x27;</span>) <span class="keyword">as</span> dt,</span><br><span class="line">    <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">as</span> pv,</span><br><span class="line">    <span class="built_in">COUNT</span>(<span class="keyword">DISTINCT</span> session_id) <span class="keyword">as</span> sessions,</span><br><span class="line">    <span class="built_in">SUM</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> action <span class="operator">=</span> <span class="string">&#x27;purchase&#x27;</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="number">0</span> <span class="keyword">END</span>) <span class="keyword">as</span> purchases</span><br><span class="line"><span class="keyword">FROM</span> user_events</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> user_id, DATE_FORMAT(et, <span class="string">&#x27;yyyy-MM-dd&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="实时报表生成"><a href="#实时报表生成" class="headerlink" title="实时报表生成"></a>实时报表生成</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 生成实时销售报表</span></span><br><span class="line"><span class="keyword">INSERT INTO</span> sales_report</span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    product_id,</span><br><span class="line">    DATE_FORMAT(order_time, <span class="string">&#x27;yyyy-MM-dd HH:mm&#x27;</span>) <span class="keyword">as</span> time_window,</span><br><span class="line">    <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">as</span> order_count,</span><br><span class="line">    <span class="built_in">SUM</span>(amount) <span class="keyword">as</span> total_amount,</span><br><span class="line">    <span class="built_in">AVG</span>(amount) <span class="keyword">as</span> avg_amount</span><br><span class="line"><span class="keyword">FROM</span> orders</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> </span><br><span class="line">    product_id, </span><br><span class="line">    DATE_FORMAT(order_time, <span class="string">&#x27;yyyy-MM-dd HH:mm&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="实时监控告警"><a href="#实时监控告警" class="headerlink" title="实时监控告警"></a>实时监控告警</h3><h4 id="异常检测"><a href="#异常检测" class="headerlink" title="异常检测"></a>异常检测</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 检测API调用异常</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    api_name,</span><br><span class="line">    window_start,</span><br><span class="line">    error_rate,</span><br><span class="line">    <span class="keyword">CASE</span> </span><br><span class="line">        <span class="keyword">WHEN</span> error_rate <span class="operator">&gt;</span> <span class="number">0.1</span> <span class="keyword">THEN</span> <span class="string">&#x27;HIGH&#x27;</span></span><br><span class="line">        <span class="keyword">WHEN</span> error_rate <span class="operator">&gt;</span> <span class="number">0.05</span> <span class="keyword">THEN</span> <span class="string">&#x27;MEDIUM&#x27;</span></span><br><span class="line">        <span class="keyword">ELSE</span> <span class="string">&#x27;LOW&#x27;</span></span><br><span class="line">    <span class="keyword">END</span> <span class="keyword">as</span> alert_level</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> </span><br><span class="line">        api_name,</span><br><span class="line">        window_start,</span><br><span class="line">        window_end,</span><br><span class="line">        <span class="built_in">CAST</span>(<span class="built_in">SUM</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> status <span class="operator">&gt;=</span> <span class="number">400</span> <span class="keyword">THEN</span> <span class="number">1</span> <span class="keyword">ELSE</span> <span class="number">0</span> <span class="keyword">END</span>) <span class="keyword">AS</span> <span class="keyword">DOUBLE</span>) <span class="operator">/</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">as</span> error_rate</span><br><span class="line">    <span class="keyword">FROM</span> <span class="keyword">TABLE</span>(</span><br><span class="line">        TUMBLE(<span class="keyword">TABLE</span> api_logs, DESCRIPTOR(et), <span class="type">INTERVAL</span> <span class="string">&#x27;1&#x27;</span> MINUTES)</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">GROUP</span> <span class="keyword">BY</span> api_name, window_start, window_end</span><br><span class="line">)</span><br><span class="line"><span class="keyword">WHERE</span> error_rate <span class="operator">&gt;</span> <span class="number">0.05</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="实时推荐系统"><a href="#实时推荐系统" class="headerlink" title="实时推荐系统"></a>实时推荐系统</h3><h4 id="用户行为分析"><a href="#用户行为分析" class="headerlink" title="用户行为分析"></a>用户行为分析</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 计算用户实时兴趣标签</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    user_id,</span><br><span class="line">    category,</span><br><span class="line">    <span class="built_in">SUM</span>(score) <span class="keyword">as</span> interest_score,</span><br><span class="line">    <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> user_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="built_in">SUM</span>(score) <span class="keyword">DESC</span>) <span class="keyword">as</span> rn</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> </span><br><span class="line">        user_id,</span><br><span class="line">        category,</span><br><span class="line">        <span class="keyword">CASE</span> action</span><br><span class="line">            <span class="keyword">WHEN</span> <span class="string">&#x27;view&#x27;</span> <span class="keyword">THEN</span> <span class="number">1</span></span><br><span class="line">            <span class="keyword">WHEN</span> <span class="string">&#x27;click&#x27;</span> <span class="keyword">THEN</span> <span class="number">3</span></span><br><span class="line">            <span class="keyword">WHEN</span> <span class="string">&#x27;purchase&#x27;</span> <span class="keyword">THEN</span> <span class="number">10</span></span><br><span class="line">            <span class="keyword">ELSE</span> <span class="number">0</span></span><br><span class="line">        <span class="keyword">END</span> <span class="keyword">as</span> score</span><br><span class="line">    <span class="keyword">FROM</span> user_behavior</span><br><span class="line">    <span class="keyword">WHERE</span> et <span class="operator">&gt;=</span> <span class="built_in">CURRENT_TIMESTAMP</span> <span class="operator">-</span> <span class="type">INTERVAL</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">HOUR</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> user_id, category;</span><br></pre></td></tr></table></figure>
+
+<h2 id="其他高级功能"><a href="#其他高级功能" class="headerlink" title="其他高级功能"></a>其他高级功能</h2><h3 id="SQL提示-Hints"><a href="#SQL提示-Hints" class="headerlink" title="SQL提示(Hints)"></a>SQL提示(Hints)</h3><p>SQL提示允许动态修改执行行为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 表提示：动态修改表选项</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> ws <span class="comment">/*+ OPTIONS(&#x27;rows-per-second&#x27;=&#x27;10&#x27;, &#x27;fields.id.max&#x27;=&#x27;7&#x27;) */</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查询提示：建议优化器选择特定策略</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="comment">/*+ LOOKUP(&#x27;table&#x27;=&#x27;dim_table&#x27;, &#x27;async&#x27;=&#x27;true&#x27;, &#x27;cache&#x27;=&#x27;FULL&#x27;) */</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> fact_table f</span><br><span class="line"><span class="keyword">JOIN</span> dim_table <span class="keyword">FOR</span> <span class="built_in">SYSTEM_TIME</span> <span class="keyword">AS</span> <span class="keyword">OF</span> f.proc_time d</span><br><span class="line"><span class="keyword">ON</span> f.id <span class="operator">=</span> d.id;</span><br></pre></td></tr></table></figure>
+
+<h3 id="集合操作"><a href="#集合操作" class="headerlink" title="集合操作"></a>集合操作</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 并集操作</span></span><br><span class="line">(<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws) <span class="keyword">UNION</span> (<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws1);           <span class="comment">-- 去重</span></span><br><span class="line">(<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws) <span class="keyword">UNION</span> <span class="keyword">ALL</span> (<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws1);       <span class="comment">-- 不去重</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 交集操作</span></span><br><span class="line">(<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws) <span class="keyword">INTERSECT</span> (<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws1);       <span class="comment">-- 去重</span></span><br><span class="line">(<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws) <span class="keyword">INTERSECT</span> <span class="keyword">ALL</span> (<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws1);   <span class="comment">-- 不去重</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 差集操作</span></span><br><span class="line">(<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws) <span class="keyword">EXCEPT</span> (<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws1);          <span class="comment">-- 去重</span></span><br><span class="line">(<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws) <span class="keyword">EXCEPT</span> <span class="keyword">ALL</span> (<span class="keyword">SELECT</span> id <span class="keyword">FROM</span> ws1);      <span class="comment">-- 不去重，产生回撤流</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="子查询优化"><a href="#子查询优化" class="headerlink" title="子查询优化"></a>子查询优化</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 使用EXISTS进行半连接</span></span><br><span class="line"><span class="keyword">SELECT</span> id, vc</span><br><span class="line"><span class="keyword">FROM</span> ws w1</span><br><span class="line"><span class="keyword">WHERE</span> <span class="keyword">EXISTS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> ws1 w2 <span class="keyword">WHERE</span> w1.id <span class="operator">=</span> w2.id</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 使用IN进行过滤</span></span><br><span class="line"><span class="keyword">SELECT</span> id, vc</span><br><span class="line"><span class="keyword">FROM</span> ws</span><br><span class="line"><span class="keyword">WHERE</span> id <span class="keyword">IN</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> id <span class="keyword">FROM</span> ws1 <span class="keyword">WHERE</span> vc <span class="operator">&gt;</span> <span class="number">50</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意事项</strong>：</p>
+<ul>
+<li>子查询结果集通常只能有一列</li>
+<li>注意状态大小问题，合理设置TTL</li>
+<li>考虑使用JOIN替代复杂子查询</li>
+</ul>
+<h2 id="最佳实践和性能调优"><a href="#最佳实践和性能调优" class="headerlink" title="最佳实践和性能调优"></a>最佳实践和性能调优</h2><h3 id="1-状态管理最佳实践"><a href="#1-状态管理最佳实践" class="headerlink" title="1. 状态管理最佳实践"></a>1. 状态管理最佳实践</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 合理设置状态TTL</span></span><br><span class="line"><span class="keyword">SET</span> table.exec.state.ttl <span class="operator">=</span> <span class="number">1</span>d;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 配置状态后端</span></span><br><span class="line"><span class="keyword">SET</span> state.backend <span class="operator">=</span> <span class="string">&#x27;rocksdb&#x27;</span>;</span><br><span class="line"><span class="keyword">SET</span> state.backend.rocksdb.memory.managed <span class="operator">=</span> <span class="literal">true</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-内存优化"><a href="#2-内存优化" class="headerlink" title="2. 内存优化"></a>2. 内存优化</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 配置内存分配</span></span><br><span class="line"><span class="keyword">SET</span> taskmanager.memory.process.size <span class="operator">=</span> <span class="number">4</span>g;</span><br><span class="line"><span class="keyword">SET</span> taskmanager.memory.flink.size <span class="operator">=</span> <span class="number">3</span>g;</span><br><span class="line"><span class="keyword">SET</span> taskmanager.memory.managed.fraction <span class="operator">=</span> <span class="number">0.4</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-并行度调优"><a href="#3-并行度调优" class="headerlink" title="3. 并行度调优"></a>3. 并行度调优</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 设置全局并行度</span></span><br><span class="line"><span class="keyword">SET</span> parallelism.default <span class="operator">=</span> <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 针对特定操作设置并行度</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="comment">/*+ OPTIONS(&#x27;sink.parallelism&#x27;=&#x27;8&#x27;) */</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> my_source;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-Checkpoint配置"><a href="#4-Checkpoint配置" class="headerlink" title="4. Checkpoint配置"></a>4. Checkpoint配置</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 启用Checkpoint</span></span><br><span class="line"><span class="keyword">SET</span> execution.checkpointing.interval <span class="operator">=</span> <span class="number">30</span>s;</span><br><span class="line"><span class="keyword">SET</span> execution.checkpointing.mode <span class="operator">=</span> EXACTLY_ONCE;</span><br><span class="line"><span class="keyword">SET</span> execution.checkpointing.timeout <span class="operator">=</span> <span class="number">10</span>min;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-水印策略"><a href="#5-水印策略" class="headerlink" title="5. 水印策略"></a>5. 水印策略</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 配置水印策略</span></span><br><span class="line"><span class="keyword">SET</span> table.exec.source.idle<span class="operator">-</span>timeout <span class="operator">=</span> <span class="number">30</span>s;</span><br><span class="line"><span class="keyword">SET</span> pipeline.auto<span class="operator">-</span>watermark<span class="operator">-</span><span class="type">interval</span> <span class="operator">=</span> <span class="number">200</span>ms;</span><br></pre></td></tr></table></figure>
+
+<h2 id="错误处理和调试"><a href="#错误处理和调试" class="headerlink" title="错误处理和调试"></a>错误处理和调试</h2><h3 id="常见错误及解决方案"><a href="#常见错误及解决方案" class="headerlink" title="常见错误及解决方案"></a>常见错误及解决方案</h3><h4 id="1-时间格式不匹配"><a href="#1-时间格式不匹配" class="headerlink" title="1. 时间格式不匹配"></a>1. 时间格式不匹配</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 错误示例</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> table1 t1</span><br><span class="line"><span class="keyword">JOIN</span> table2 t2</span><br><span class="line"><span class="keyword">ON</span> t1.id <span class="operator">=</span> t2.id</span><br><span class="line"><span class="keyword">AND</span> t1.proc_time <span class="keyword">BETWEEN</span> t2.event_time <span class="operator">-</span> <span class="type">INTERVAL</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">HOUR</span> <span class="keyword">AND</span> t2.event_time;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 正确示例：统一使用事件时间</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> table1 t1</span><br><span class="line"><span class="keyword">JOIN</span> table2 t2</span><br><span class="line"><span class="keyword">ON</span> t1.id <span class="operator">=</span> t2.id</span><br><span class="line"><span class="keyword">AND</span> t1.event_time <span class="keyword">BETWEEN</span> t2.event_time <span class="operator">-</span> <span class="type">INTERVAL</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">HOUR</span> <span class="keyword">AND</span> t2.event_time;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-状态过大问题"><a href="#2-状态过大问题" class="headerlink" title="2. 状态过大问题"></a>2. 状态过大问题</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 问题：状态无限增长</span></span><br><span class="line"><span class="comment">-- 解决方案：设置TTL和清理策略</span></span><br><span class="line"><span class="keyword">SET</span> table.exec.state.ttl <span class="operator">=</span> <span class="number">1</span>h;</span><br><span class="line"><span class="keyword">SET</span> table.exec.state.ttl.strategy <span class="operator">=</span> <span class="string">&#x27;OnReadAndWrite&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-背压问题"><a href="#3-背压问题" class="headerlink" title="3. 背压问题"></a>3. 背压问题</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 启用背压监控</span></span><br><span class="line"><span class="keyword">SET</span> web.backpressure.enabled <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">SET</span> web.backpressure.num<span class="operator">-</span>samples <span class="operator">=</span> <span class="number">100</span>;</span><br><span class="line"><span class="keyword">SET</span> web.backpressure.delay<span class="operator">-</span><span class="keyword">between</span><span class="operator">-</span>samples <span class="operator">=</span> <span class="number">50</span>ms;</span><br></pre></td></tr></table></figure>
+
+<h3 id="监控和指标"><a href="#监控和指标" class="headerlink" title="监控和指标"></a>监控和指标</h3><h4 id="关键指标监控"><a href="#关键指标监控" class="headerlink" title="关键指标监控"></a>关键指标监控</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 监控延迟指标</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    <span class="built_in">CURRENT_TIMESTAMP</span> <span class="keyword">as</span> check_time,</span><br><span class="line">    <span class="built_in">MAX</span>(<span class="built_in">CURRENT_TIMESTAMP</span> <span class="operator">-</span> et) <span class="keyword">as</span> max_latency,</span><br><span class="line">    <span class="built_in">AVG</span>(<span class="built_in">CURRENT_TIMESTAMP</span> <span class="operator">-</span> et) <span class="keyword">as</span> avg_latency</span><br><span class="line"><span class="keyword">FROM</span> my_stream</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> TUMBLE(et, <span class="type">INTERVAL</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">MINUTE</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="版本兼容性和升级指南"><a href="#版本兼容性和升级指南" class="headerlink" title="版本兼容性和升级指南"></a>版本兼容性和升级指南</h2><h3 id="Flink-1-16-新特性"><a href="#Flink-1-16-新特性" class="headerlink" title="Flink 1.16+ 新特性"></a>Flink 1.16+ 新特性</h3><ol>
+<li><strong>改进的SQL Gateway</strong>：更好的多租户支持</li>
+<li><strong>增强的CDC支持</strong>：更完善的变更数据捕获</li>
+<li><strong>优化的状态管理</strong>：更高效的状态访问</li>
+<li><strong>新的窗口API</strong>：更直观的窗口操作</li>
+</ol>
+<h3 id="升级注意事项"><a href="#升级注意事项" class="headerlink" title="升级注意事项"></a>升级注意事项</h3><ol>
+<li><strong>API变更</strong>：检查废弃的API和配置项</li>
+<li><strong>状态兼容性</strong>：确保状态格式兼容</li>
+<li><strong>性能测试</strong>：验证性能是否符合预期</li>
+<li><strong>监控调整</strong>：更新监控指标和告警</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Flink SQL作为统一的流批处理SQL引擎，提供了丰富的功能和优化选项。通过合理使用TopN、Join、窗口函数、CEP等高级特性，结合适当的性能调优策略，可以构建高效、可靠的实时数据处理应用。</p>
+<p><strong>关键要点</strong>：</p>
+<ol>
+<li>理解流处理的特殊性，合理设计状态管理策略</li>
+<li>根据业务场景选择合适的Join类型和窗口函数</li>
+<li>充分利用Flink SQL的优化特性，如MiniBatch、本地&#x2F;全局聚合等</li>
+<li>重视监控和调试，及时发现和解决性能问题</li>
+<li>持续关注Flink社区的最新发展和最佳实践</li>
+</ol>
+<p>希望本文能帮助您更好地理解和使用Flink SQL，构建出高性能的实时数据处理应用。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/Flink/" rel="tag"># Flink</a>
+              <a href="/blog/tags/SQL/" rel="tag"># SQL</a>
+              <a href="/blog/tags/%E6%B5%81%E5%A4%84%E7%90%86/" rel="tag"># 流处理</a>
+              <a href="/blog/tags/%E5%AE%9E%E6%97%B6%E8%AE%A1%E7%AE%97/" rel="tag"># 实时计算</a>
+              <a href="/blog/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag"># 大数据</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2020/02/15/Kafka%E7%9F%A5%E8%AF%86%E7%82%B9%E5%8F%8A%E5%AE%9E%E6%88%98%E6%80%BB%E7%BB%93/" rel="prev" title="Kafka知识点及实战总结">
+                  <i class="fa fa-angle-left"></i> Kafka知识点及实战总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blog/2023/08/15/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%AF%B9%E7%85%A7/" rel="next" title="深入解析多进程、多线程、协程与同步&#x2F;异步编程模型">
+                  深入解析多进程、多线程、协程与同步/异步编程模型 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2014 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">NexT</span>
+  </div>
+  <div class="powered-by">由 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRlZS5jb20vYWRkcm9j" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"next-theme","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/blog/js/third-party/comments/disqus.js" defer></script>
+
+</body>
+</html>

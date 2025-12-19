@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inconsolata:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"phoenixsu9.github.io","root":"/blog/","images":"/blog/images","scheme":"Gemini","darkmode":true,"version":"8.23.1","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"default"},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/blog/js/config.js" defer></script>
+
+    <meta name="description" content="数据中台设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据平台设计">
+<meta property="og:url" content="https://phoenixsu9.github.io/blog/2024/08/01/%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E8%AE%BE%E8%AE%A1/index.html">
+<meta property="og:site_name" content="Addroc&#39;s Blog">
+<meta property="og:description" content="数据中台设计">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://phoenixsu9.github.io/blog/%5Bimages%5Dhttps:/phoenixsu9.github.io/images/data_middle_platform/wechat_2025-08-01_151642_565.png">
+<meta property="og:image" content="https://phoenixsu9.github.io/images/data_middle_platform/%E7%A1%AC%E4%BB%B6%E9%80%89%E5%9E%8B%E7%9A%84%E5%8E%9F%E5%88%99.png">
+<meta property="og:image" content="https://phoenixsu9.github.io/images/data_middle_platform/wechat_2025-08-01_153046_617.png">
+<meta property="article:published_time" content="2024-08-01T06:33:40.000Z">
+<meta property="article:modified_time" content="2025-12-19T07:16:02.807Z">
+<meta property="article:author" content="Addroc">
+<meta property="article:tag" content="大数据">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://phoenixsu9.github.io/blog/%5Bimages%5Dhttps:/phoenixsu9.github.io/images/data_middle_platform/wechat_2025-08-01_151642_565.png">
+
+
+<link rel="canonical" href="https://phoenixsu9.github.io/blog/2024/08/01/%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E8%AE%BE%E8%AE%A1/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://phoenixsu9.github.io/blog/2024/08/01/%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E8%AE%BE%E8%AE%A1/","path":"2024/08/01/数据平台设计/","title":"数据平台设计"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>数据平台设计 | Addroc's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-43861RVV8R"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-43861RVV8R","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/blog/js/third-party/analytics/google-analytics.js" defer></script>
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous" defer></script>
+<script src="/blog/js/utils.js" defer></script><script src="/blog/js/motion.js" defer></script><script src="/blog/js/sidebar.js" defer></script><script src="/blog/js/next-boot.js" defer></script><script src="/blog/js/pjax.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous" defer></script>
+<script src="/blog/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.5.0/mermaid.min.js","integrity":"sha256-2obLuIPcceEhkE3G09G33hBdmE55ivVcZUlcKcGNHjU="}}</script>
+  <script src="/blog/js/third-party/tags/mermaid.js" defer></script>
+
+  <script class="next-config" data-name="wavedrom" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/wavedrom.min.js","integrity":"sha256-INLAoJc6quTNfiMWkGZniYO2cxE8mHpddnLow1m6RFs="}}</script>
+  <script class="next-config" data-name="wavedrom_skin" type="application/json">{"enable":true,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/wavedrom/3.5.0/skins/default.js","integrity":"sha256-fduc/Zszk5ezWws2uInY/ALWVmIrmV6VTgXbsYSReFI="}}</script>
+  <script src="/blog/js/third-party/tags/wavedrom.js" defer></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/blog/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/blog/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Addroc's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Addroc blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">21</span></a></li><li class="menu-item menu-item-categories"><a href="/blog/categories/" rel="section"><i class="fa fa-folder-open fa-fw"></i>分类<span class="badge">20</span></a></li><li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">63</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.</span> <span class="nav-text">数据平台架构设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%80%BB%E4%BD%93%E6%9E%B6%E6%9E%84%E5%9B%BE"><span class="nav-number">1.1.</span> <span class="nav-text">1. 总体架构图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="nav-number">1.2.</span> <span class="nav-text">2. 设计理念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 核心思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E6%9E%B6%E6%9E%84%E5%B1%82%E6%AC%A1"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 架构层次</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%AE%A1%E7%AE%97%E8%B5%84%E6%BA%90%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.3.</span> <span class="nav-text">3. 计算资源设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-Kafka%E9%9B%86%E7%BE%A4"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 Kafka集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-Flink%E9%9B%86%E7%BE%A4"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 Flink集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-Spark%E9%9B%86%E7%BE%A4"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 Spark集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ClickHouse%E9%AB%98%E5%B9%B6%E5%8F%91%E6%9F%A5%E8%AF%A2%E3%80%82"><span class="nav-number">1.3.4.</span> <span class="nav-text">ClickHouse高并发查询。</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.</span> <span class="nav-text">4. 数据存储策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E5%88%86%E7%BA%A7%E5%AD%98%E5%82%A8%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 分级存储设计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E7%A1%AC%E4%BB%B6%E9%80%89%E5%9E%8B%E5%8E%9F%E5%88%99"><span class="nav-number">1.5.</span> <span class="nav-text">5. 硬件选型原则</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Addroc"
+      src="/blog/images/touxiang.jpg">
+  <p class="site-author-name" itemprop="name">Addroc</p>
+  <div class="site-description" itemprop="description">Addroc's blog</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/blog/archives/">
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/blog/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/blog/tags/">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRlZS5jb20vYWRkcm9j" title="GitHub → https:&#x2F;&#x2F;gitee.com&#x2F;addroc"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmFkZHJvY19zdWVAMTYzLmNvbQ==" title="E-Mail → mailto:addroc_sue@163.com"><i class="fa fa-envelope fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FkZHJvY19zdWU=" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;addroc_sue"><i class="fa fa-rss fa-fw"></i></span>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/big/by_nc_sa.svg" alt="Creative Commons"></span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://phoenixsu9.github.io/blog/2024/08/01/%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E8%AE%BE%E8%AE%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/touxiang.jpg">
+      <meta itemprop="name" content="Addroc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Addroc's Blog">
+      <meta itemprop="description" content="Addroc's blog">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="数据平台设计 | Addroc's Blog">
+      <meta itemprop="description" content="数据中台设计">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据平台设计<span class="exturl post-edit-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL25leHQtdGhlbWUvdGhlbWUtbmV4dC1kb2NzL2VkaXQvbWFzdGVyL3NvdXJjZS9fcG9zdHMv5pWw5o2u5bmz5Y+w6K6+6K6hLm1k" title="编辑"><i class="fa fa-pen-nib"></i></span>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-01 14:33:40" itemprop="dateCreated datePublished" datetime="2024-08-01T14:33:40+08:00">2024-08-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">大数据技术</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/blog/2024/08/01/%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E8%AE%BE%E8%AE%A1/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2024/08/01/数据平台设计/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+            <div class="post-description">数据中台设计</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="数据平台架构设计"><a href="#数据平台架构设计" class="headerlink" title="数据平台架构设计"></a>数据平台架构设计</h1><h2 id="1-总体架构图"><a href="#1-总体架构图" class="headerlink" title="1. 总体架构图"></a>1. 总体架构图</h2><p><img src="/blog/%5Bimages%5Dhttps:/phoenixsu9.github.io/images/data_middle_platform/wechat_2025-08-01_151642_565.png" alt="数据中台设计-架构图"></p>
+<h2 id="2-设计理念"><a href="#2-设计理念" class="headerlink" title="2. 设计理念"></a>2. 设计理念</h2><h3 id="2-1-核心思想"><a href="#2-1-核心思想" class="headerlink" title="2.1 核心思想"></a>2.1 核心思想</h3><ul>
+<li><strong>4纵4横设计</strong>：参照杭州市大数据局城市数据集建设构想</li>
+<li><strong>架构原则</strong>：<ul>
+<li>分层解耦</li>
+<li>实时离线分离  </li>
+<li>数据冷热分离</li>
+<li>服务化与治理化并行</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-2-架构层次"><a href="#2-2-架构层次" class="headerlink" title="2.2 架构层次"></a>2.2 架构层次</h3><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>功能</th>
+<th>扩展性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据源层</td>
+<td>数据采集接入</td>
+<td>支持横向扩展</td>
+</tr>
+<tr>
+<td>计算层</td>
+<td>流批处理</td>
+<td>支持横向扩展</td>
+</tr>
+<tr>
+<td>存储层</td>
+<td>数据持久化</td>
+<td>支持横向扩展</td>
+</tr>
+<tr>
+<td>服务层</td>
+<td>数据API服务</td>
+<td>支持横向扩展</td>
+</tr>
+</tbody></table>
+<h2 id="3-计算资源设计"><a href="#3-计算资源设计" class="headerlink" title="3. 计算资源设计"></a>3. 计算资源设计</h2><h3 id="3-1-Kafka集群"><a href="#3-1-Kafka集群" class="headerlink" title="3.1 Kafka集群"></a>3.1 Kafka集群</h3><p>主要考虑：<br>  1MB&#x2F;s持续数据流（相当于​​8.4Mbps​​）需应对5倍峰值突发（​​42Mbps​​），且需避免因磁盘I&#x2F;O瓶颈导致数据积压。 NVMe SSD 有2.5M IOPS 比传统机械的 100-200 高很多。</p>
+<p>  可能会有5MB&#x2F;s的情况， 1KB一条数据得算起， Kafka日志写入需​​≥5000 IOPS。</p>
+<p>  NVMe SSD 有2.5M IOPS 支持这样写入。</p>
+<ul>
+<li><strong>规格配置</strong>：<ul>
+<li>16核CPU &#x2F; 64GB内存 2TB NVMe SSD</li>
+<li>万兆网卡</li>
+</ul>
+</li>
+<li><strong>性能指标</strong>：<ul>
+<li>支持1MB&#x2F;s持续流量</li>
+<li>峰值5倍扩容能力(5MB&#x2F;s)</li>
+<li>2.5M IOPS高吞吐</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-2-Flink集群"><a href="#3-2-Flink集群" class="headerlink" title="3.2 Flink集群"></a>3.2 Flink集群</h3><p>1MB&#x2F;s流相当于​​每秒有10万个事件，单个事件10B，一般时间窗口10分钟，而Flink处理一个事件需要占用1KB的内存，10 万 * 10 * 60s * 1KB &#x3D;  60G 左右的数据，再结合杂七杂八的 OS缓存（10GB）、JVM堆外内存（15GB）、Flink网络缓冲（8GB） ,总的内存需求 逼近 128GB </p>
+<p>为什么建议2TB硬盘存储的原因。<br>每日数据量：1MB&#x2F;s × 86400s &#x3D; ​​86.4GB​​<br>Checkpoint保留7天：86.4GB × 7 &#x3D; ​​605GB​​<br>RocksDB状态存储放大率（1.5倍）：​​605GB × 1.5 &#x3D; 908GB​​<br>​​系统预留​​：OS（100GB）、日志（50GB）、临时文件（50GB）​​→ 最小需求 908 + 100 + 50 + 50 &#x3D; 1108GB​​<br>​​若降至1TB SSD​​：每日需清理Checkpoint，​​状态恢复失败率 &gt; 15%​​</p>
+<ul>
+<li><strong>节点配置</strong>：<ul>
+<li>8个TaskManager节点，  每台 ​​128GB DDR4 + 2TB NVMe  32核CPU </li>
+<li>16 Slot&#x2F;节点</li>
+</ul>
+</li>
+<li><strong>设计考量</strong>：<ul>
+<li>并行计算：支持5倍流量突发</li>
+<li>内存优化：减少GC延迟</li>
+<li>低延迟：端到端&lt;500ms</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-3-Spark集群"><a href="#3-3-Spark集群" class="headerlink" title="3.3 Spark集群"></a>3.3 Spark集群</h3><ul>
+<li><strong>硬件配置</strong>：<ul>
+<li>48核CPU &#x2F; 512GB DDR5内存</li>
+<li>6×4TB HDD(RAID5)</li>
+</ul>
+</li>
+<li><strong>性能优势</strong>：<ul>
+<li>比32核提升50%处理效率</li>
+<li>DDR5提升33%内存带宽</li>
+<li>经济存储方案</li>
+</ul>
+</li>
+</ul>
+<h3 id="ClickHouse高并发查询。"><a href="#ClickHouse高并发查询。" class="headerlink" title="ClickHouse高并发查询。"></a>ClickHouse高并发查询。</h3><p>6节点集群（3分片×2副本），每节点 ​​8TB SSD + 64GB RAM​.<br>1MB&#x2F;s流相当于每月2.6TB原始数据。​​基于此​​，ClickHouse的10:1列存压缩将有效存储需求降至260GB，结合64GB RAM缓存，使95%查询无需读盘。</p>
+<p>8T 用来大规模数据存储。</p>
+<p>HDFS持久化存储设计:</p>
+<p>批处理层：经济型存储与计算分离​<br>离线分析需处理月级 ​​2.6TB数据​​，但冷数据访问频率低，HDD吞吐不足易成ETL瓶颈<br>因 ​​HDD顺序读写带宽200MB&#x2F;s​​（媲美低端SSD），且 ​​Erasure Coding（EC 6+3）​​ 比三副本节省50%空间，结合 ​​Alluxio内存缓存​​热表，将温数据访问延迟从分钟级降至秒级，平衡成本与性能</p>
+<p>5台DataNode，每台 ​​12TB HDD（7200RPM） + 48GB RAM​​<br>设计依据：HDD阵列+EC提供48TB有效容量，总吞吐1GB&#x2F;s，满足夜间ETL窗口需求</p>
+<h2 id="4-数据存储策略"><a href="#4-数据存储策略" class="headerlink" title="4. 数据存储策略"></a>4. 数据存储策略</h2><h3 id="4-1-分级存储设计"><a href="#4-1-分级存储设计" class="headerlink" title="4.1 分级存储设计"></a>4.1 分级存储设计</h3><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>存储方案</th>
+<th>访问延迟</th>
+<th>适用场景</th>
+<th>成本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>热数据</td>
+<td>ClickHouse&#x2F;Druid</td>
+<td>亚秒级</td>
+<td>实时看板</td>
+<td>$0.5&#x2F;GB&#x2F;月</td>
+</tr>
+<tr>
+<td>温数据</td>
+<td>HDFS+Alluxio</td>
+<td>秒级</td>
+<td>交互分析</td>
+<td>$0.1&#x2F;GB&#x2F;月</td>
+</tr>
+<tr>
+<td>冷数据</td>
+<td>S3+ZSTD压缩</td>
+<td>分钟级</td>
+<td>合规备份</td>
+<td>$0.01&#x2F;GB&#x2F;月</td>
+</tr>
+</tbody></table>
+<h2 id="5-硬件选型原则"><a href="#5-硬件选型原则" class="headerlink" title="5. 硬件选型原则"></a>5. 硬件选型原则</h2><p><img src="https://phoenixsu9.github.io/images/data_middle_platform/%E7%A1%AC%E4%BB%B6%E9%80%89%E5%9E%8B%E7%9A%84%E5%8E%9F%E5%88%99.png" alt="硬件选型的原则"></p>
+<p>为保障1MB&#x2F;s数据流的实时性，​​因​​Kafka生产者需毫秒级持久化，​​故​​选用NVMe SSD——其2.5M IOPS比HDD高25倍，将磁盘延迟压缩至0.1ms内，避免反压。</p>
+<p><img src="https://phoenixsu9.github.io/images/data_middle_platform/wechat_2025-08-01_153046_617.png" alt="数据容量的考虑"></p>
+<p>容量计算的问题:</p>
+<ul>
+<li>原始数据：1MB&#x2F;s * 86400 &#x3D; 86.4GB&#x2F;日</li>
+<li>压缩存储：Parquet+ZSTD ≈ 21.6GB&#x2F;日<br>一个月存储量: 86.4GB*30 2.6TB的原始数据  </li>
+<li>3年存储：21.6GB * 1095 ≈ 23.6TB （3副本&#x3D;70.8TB）</li>
+</ul>
+<p>现在来想一下我的各个领域准备的如何:</p>
+<ol>
+<li><p>面试开场 优势介绍 简单介绍自己。</p>
+</li>
+<li><p>30人左右的团队搭建和管理能力。</p>
+</li>
+<li><p>扎实的技术功底，多年前沿技术的落地经验。</p>
+</li>
+<li><p>大赛&#x2F;企业评奖&#x2F;开源共享&#x2F;知识分享输出。获取广阔的视野和海量的技术应用经验。<br>大赛: 数据要素大赛&#x2F;飞书AI训练营。<br>企业评奖: 支撑企业评选数据智能工厂，获政府项目奖励300万。<br>开源共享:<br> 可能会涉及的问题:<br>   1.<br>知识分享输出: 博客创作，技术经验分享帖子创作。</p>
+</li>
+<li><p>党员的信念感和责任感，始终跟随国家政策的脚步，冲在前线。<br>技术出海的事情<br>疫情支援数据挖掘。</p>
+</li>
+<li><p>面试题1道必考，关于架构设计。</p>
+</li>
+<li><p>关于AI 项目的内容，AI数管员。<br> 当前公司面临数据孤岛，8大独立系统割裂。取数用数效率低下，业务决策依赖手工报表。<br> 我作为研发总监，契合公司战略，核心目标是打造AI数管员，通过自然语言和系统数据交互，实现一站式解决</p>
+<ul>
+<li>跨系统取数&#x2F;根因分析&#x2F;趋势预测&#x2F;指标监控  四大场景。<br> 我主导设计了 LLM + 双层意图识别 + Rag + Agent 混合架构。</li>
+</ul>
+<p> 实现了:<br>   意图识别层: 开发了线缆行业定制化的意图识别引擎，(BERT微调 + LLM +RAG) ,结合行业&#x2F;设计以及生成数据，打磨线缆行业标准数据要素集，开发此意图识别引擎。<br>   数据层: 构建知识图谱赋能的混合引擎(Milvus向量库 + Neo4j图谱网络)，关联设备 - 订单- 工艺参数实体。<br>   AGENT层: 基于LangChain Agent 开发任务规划期，Planner + Executor ，支持复杂查询动态拆解，自动调用工具生成可解释的分析报告。</p>
+<p> 效果，6大车间(同轴&#x2F;安防&#x2F;绝缘&#x2F;护套&#x2F;编制&#x2F;网络线)降低3&#x2F;4的数管数量，年节省人力成本接近200万元。数据获取效率提高80%，关键系统异常分析报告生成效率提高90%。</p>
+<p> 可能衍生的一系列问题:</p>
+<ul>
+<li><p>大模型幻觉的问题:</p>
+<p>检索结果来源标注 + 置信度阈值控制 等方式解决。</p>
+</li>
+<li><p>Agent可靠性的问题</p>
+</li>
+<li><p>数据安全的问题</p>
+</li>
+</ul>
+<p> 为什么大模型服务必用 HTTP&#x2F;2？​<br> HTTP&#x2F;2 通过二进制分帧、多路复用和头部压缩，彻底解决 HTTP&#x2F;1.1 的并发限制和性能瓶颈，使大模型服务能以更少资源支撑更高吞吐量，尤其适合API网关部署与流式生成场景。</p>
+</li>
+<li><p>自己企业内部的管理结构以及自己所处的位置。<br>  技术部负责人，是我的直属领导，是我的资源诉求方，我平级的是技术总监(线缆方面)。合作方有: 综合管理部，生产车间主任，质量总监，</p>
+</li>
+</ol>
+<p>  配合过程:<br>    我定技术框架，IT给资源保障，技术负责人批预算。<br>    我负责造工具，质量定义规则，生产用工具。<br>    我负责搭系统，生产提需求，技术负责人推动变革。<br>    我主导设计，IT把控安全，业务部门自已用。</p>
+<p>  我内部部门分成6个小组，分别是:</p>
+<ol>
+<li>系统集成和运维组(6) 3个实施 + 2个运维 + 1个系统架构师</li>
+<li>数据分析和业务赋能组(4) 2个高级数据分析 + 2个业务数据分析</li>
+<li>数据底座(中台组)(6): 数据架构师 + 高级数据治理 + 数据开发3 + 数据资产运营</li>
+<li>物联网技术和设备组 (5): 物联网平台工程师 + 边缘计算工程师  + 硬件工程师 + 协议适配工程师 + 物联网应用</li>
+<li>安全和测试 安全顾问 1  测试1人</li>
+<li>项目管理和PMO  项目经理2人 产品经理1 人</li>
+</ol>
+<p>  管理的手段和方法:<br>  最重要的是业绩，所以第一考量必须是目标，比如给我们数字化部门的目标是降本增效 3000万</p>
+<ol>
+<li>目标管理： 团队级别的OKR  + 双周的对齐会议</li>
+<li>根据业务价值量化绩效考核的指标。</li>
+</ol>
+<p>  团队内部如何进行管理和决策呢？<br>  能力成熟度—进行分层管理 + 公司级别的师带徒计划的落实，成员 初级 -&gt; 中级 -&gt; 高级的不断的成长与迭代。<br>  对于某个目标场景，网格化分工，落实到具体的角色。形成 需求方，执行方，验收方的责任链条。<br>  内部决策: 我牵头成立技术委员会  + 领域专家制。</p>
+<p>  三人最小化验证小组的成立，对于新技术，15%预算投入小规模验证，没有问题后大规模推广。</p>
+<p>  团队外部-跨部门协同-业务语言，面向业务的人员是我们的切入点。 实施，业务数据分析，项目经理。他们负责将业务语言转化为技术需求。<br>  业务即是我们的需求方，也是我们的考核方，目标和考核也与业务的效率的提升目标挂钩。</p>
+<p>  人才如何培养和进阶:<br>    师带徒的战略的紧密融入，部门特色的晋升体系，技术+ 业务两手抓，两维度考核，技术-任务包 业务: 业务汇报<br>    技术: 提升人员的专业度  业务: 行业归属感 + 公司归属感提升  </p>
+<p>  过程监控: 用数字化工具 + 敏捷迭代+ 灰度发布<br>  飞书多维表格: 进行需求和项目全生命周期管理，需求-设计-开发-测试-上线-交付 设置预警机制。<br>  大型项目则采用  敏捷迭代+ 灰度发布 </p>
+<p>  文化:坚持公司文化+ 互联网文化融合制造。公司: 成为线缆行业的高端客户的首选供应商。</p>
+<ol start="5">
+<li><p>物联网协议方面的和AI相关的问题、多看多记住。</p>
+</li>
+<li><p>加个卷积神经网络在大模型中的应用相关的问题。 </p>
+</li>
+<li><p>薪资谈判技巧。</p>
+</li>
+</ol>
+<p>我的核心项目:</p>
+<ol>
+<li>数据底座的升级项目-升级大数据</li>
+<li>AI数管员</li>
+<li>工艺产品研发设计管理系统</li>
+<li>RPA项目</li>
+</ol>
+<p>不管如何，我都要聚焦大模型的内容,结合上份工作的内容，多尝试。</p>
+<p>可能问到的问题:<br>你如何设计一个Agent的规划器（Planner），使其能够分解复杂任务并制定有效计划？<br>  既然谈到Agent的规划器，其实核心目的就是任务的拆解，拆解为子任务，获取数据并进行推理的过程。</p>
+<ol>
+<li>解决拆解不出来的问题: 定义行业或者业务的任务拆解模版。</li>
+<li>别拆解的太深或者陷入死循环: 设置熔断层以及监控。</li>
+<li>关于一些敏感数据的部分，需要调用审批触发的工具或者脱敏才能获取相应的结果。</li>
+</ol>
+<p>关于AI比较大的话题，关于落地方面的困难。<br>最大的困难是ROI, -轻量化垂直方案降低试错成本<br>长链条错误会被无限的放大的问题 </p>
+<ul>
+<li>深耕领域，制作强规则引擎，固话关键的逻辑，极致的降低幻觉。</li>
+<li>发觉大模型的推理能力。</li>
+</ul>
+<p>如何监控和评估RAG系统的整体效果？除了最终答案准确性，还关注哪些指标（检索相关度、延迟、成本）？</p>
+<p>1. </p>
+<p>卷积神经网络方面的应用:</p>
+<p>我的提问:<br>如何定义这个岗位前6个月的成功？我建议从系统稳定性、团队输出、创新落地三维度衡量?</p>
+<p>当前团队面对的最大挑战是什么？</p>
+<p>还有抖音上收藏了一些比较通用的内容和话术。应对一些CEO的角色。</p>
+<p>脑袋里面还是对整体他们团队的规模和架构不是非常了解。–其实这个应该在初次碰撞中问到的内容。</p>
+<p>公司的信息:<br>国有企业 台州椒江区  三个股东  大股东  城投是最大的股东。</p>
+<ol>
+<li>云业务 数据中心  电子政务云 两朵 政务公有云  政务专有云   国资云  </li>
+<li>企业  主机托管的业务  机房   7*24 小时   主机托管的服务。  </li>
+<li>20年开始  麒麟中标系统   信创  国家的团队  。中美科技战，党政机关  </li>
+<li>行业的  电力信创  专业场景 </li>
+<li>能源  用能管理  水电气煤。生产电缆的数据的采集。光谱的改造。  </li>
+<li>低空 无人机的应用。数据采集。招：研发中心，研发总监，管理能力，专业条件的沟通，技术能力。</li>
+</ol>
+<p>用决策逻辑碾压知识储备。尽量避免一问一答的模式，像学生背书，研发总监要展示决策思维。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag"># 大数据</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2024/03/15/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%9C%A8AI%E5%A4%A7%E6%A8%A1%E5%9E%8B%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8%E5%AE%9E%E6%88%98/" rel="prev" title="神经网络在AI大模型中的应用实战">
+                  <i class="fa fa-angle-left"></i> 神经网络在AI大模型中的应用实战
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blog/2024/11/15/%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A3/" rel="next" title="线性回归算法详解">
+                  线性回归算法详解 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2014 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">NexT</span>
+  </div>
+  <div class="powered-by">由 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZw==">NexT.Gemini</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRlZS5jb20vYWRkcm9j" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"next-theme","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/blog/js/third-party/comments/disqus.js" defer></script>
+
+</body>
+</html>
